@@ -1,0 +1,29 @@
+{
+  "title": "IMG_20210710_225844884.jpg",
+  "description": "",
+  "imageViews": "8",
+  "creationTime": {
+    "timestamp": "1625951518",
+    "formatted": "10.07.2021, 21:11:58 UTC"
+  },
+  "photoTakenTime": {
+    "timestamp": "1625950725",
+    "formatted": "10.07.2021, 20:58:45 UTC"
+  },
+  "geoData": {
+    "latitude": 0.0,
+    "longitude": 0.0,
+    "altitude": 0.0,
+    "latitudeSpan": 0.0,
+    "longitudeSpan": 0.0
+  },
+  "url": "https://photos.google.com/photo/AF1QipPZkniFIIBbPArRYEy1SGuXX4S9T4neC_Oe3Z22",
+  "googlePhotosOrigin": {
+    "mobileUpload": {
+      "deviceFolder": {
+        "localFolderName": ""
+      },
+      "deviceType": "ANDROID_PHONE"
+    }
+  }
+}

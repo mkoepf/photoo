@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "AfterTool": [
+      {
+        "matcher": "write_file|replace",
+        "hooks": [
+          {
+            "name": "quality-check-feedback",
+            "type": "command",
+            "command": "node .gemini/hooks/post-change-check.js"
+          }
+        ]
+      }
+    ]
+  }
+}
