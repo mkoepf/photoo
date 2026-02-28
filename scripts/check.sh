@@ -36,6 +36,10 @@ if [ -d "frontend" ]; then
     npm run type-check || npx tsc --noEmit
     echo -e "${GREEN}PASSED${NC}"
 
+    echo -n "   - Running frontend tests (vitest)... "
+    npm test -- --silent
+    echo -e "${GREEN}PASSED${NC}"
+
     # If a lint script exists in package.json
     if grep -q "lint" package.json; then
         echo -n "   - Running frontend lint... "

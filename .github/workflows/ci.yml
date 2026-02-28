@@ -37,6 +37,7 @@ jobs:
           fi
           npm run build
           npm run type-check || npx tsc --noEmit
+          npm test -- --silent
           if grep -q "lint" package.json; then
             npm run lint
           fi
