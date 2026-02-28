@@ -76,12 +76,17 @@ go test -v -race ./...
 echo -e "${GREEN}Go tests PASSED${NC}"
 
 # --- 6. Vulnerability Scan (if govulncheck is installed) ---
+# Ensure we check GOPATH/bin for the newest version
+GOPATH_BIN=$(go env GOPATH)/bin
+PATH="$GOPATH_BIN:$PATH"
+
 if command -v govulncheck &> /dev/null; then
     echo -e "6. Running vulnerability scan (govulncheck)..."
     govulncheck ./... || echo -e "${YELLOW}Vulnerability scan found issues, but continuing...${NC}"
     echo -e "${GREEN}Scan complete.${NC}"
 else
     echo -e "${YELLOW}6. govulncheck not found. Skipping scan.${NC}"
+    echo -e "   Tip: Run 'go install golang.org/x/vuln/cmd/govulncheck@latest' to install it."
 fi
 
 echo -e "${BLUE}--- All Photoo Quality Checks PASSED ---${NC}"
