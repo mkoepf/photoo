@@ -12,8 +12,8 @@ type Photo struct {
 	Hash         string    `json:"hash"` // SHA-256
 	DateTaken    time.Time `json:"date_taken"`
 	CameraModel  string    `json:"camera_model"`
-	Latitude     *float64  `json:"latitude"`
-	Longitude    *float64  `json:"longitude"`
+	Latitude     *float64  `json:"latitude,omitempty"`
+	Longitude    *float64  `json:"longitude,omitempty"`
 	ImportDate   time.Time `json:"import_date"`
 }
 

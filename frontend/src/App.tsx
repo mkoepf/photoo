@@ -58,7 +58,13 @@ function App() {
     };
 
     const loadPhotos = () => {
-        GetPhotos().then(setPhotos).catch(console.error);
+        console.log("Fetching photos...");
+        GetPhotos().then(data => {
+            console.log("Photos received:", data);
+            setPhotos(data);
+        }).catch(err => {
+            console.error("Failed to fetch photos:", err);
+        });
     };
 
     useEffect(() => {

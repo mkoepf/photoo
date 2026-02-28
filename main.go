@@ -29,9 +29,9 @@ func main() {
 		Width:  1024,
 		Height: 768,
 		AssetServer: &assetserver.Options{
-			Assets: assets, // Still need this for Wails to know where assets are
+			Assets: assets,
 			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path == "/thumbnail/" || (len(r.URL.Path) > 11 && r.URL.Path[:11] == "/thumbnail/") {
+				if len(r.URL.Path) >= 11 && r.URL.Path[:11] == "/thumbnail/" {
 					thumbHandler.ServeHTTP(w, r)
 					return
 				}
