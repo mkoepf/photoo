@@ -13,3 +13,7 @@ export function ImportFromFolder(arg1) {
 export function SelectFolder() {
   return window['go']['main']['App']['SelectFolder']();
 }
+
+export function UpdatePhotoDate(arg1, arg2) {
+  return window['go']['main']['App']['UpdatePhotoDate'](arg1, arg2);
+}

@@ -10,6 +10,7 @@ import (
 	"photoo/internal/db"
 	"photoo/internal/library"
 	"photoo/internal/models"
+	"time"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -110,4 +111,18 @@ func (a *App) ImportFromFolder(folderPath string) (int, error) {
 	})
 
 	return count, err
+}
+
+// UpdatePhotoDate updates the capture date of a photo
+func (a *App) UpdatePhotoDate(photoID int64, newDate string) error {
+	parsedDate, err := time.Parse(time.RFC3339, newDate)
+	if err != nil {
+		// Try other formats if RFC3339 fails (e.g. from datetime-local input)
+		parsedDate, err = time.Parse("2006-01-02T15:04", newDate)
+		if err != nil {
+			return fmt.Errorf("invalid date format: %w", err)
+		}
+	}
+
+	return a.manager.UpdateMetadata(photoID, "date_taken", parsedDate)
 }
