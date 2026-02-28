@@ -37,6 +37,11 @@ go run cmd/test-import/main.go
 ## 3. Desktop UI Testing
 To test the full application experience, including the interactive grid and folder selection.
 
+**Note:** If you get `command not found: wails`, ensure your Go bin directory is in your PATH:
+```bash
+export PATH="$(go env GOPATH)/bin:$PATH"
+```
+
 **To start the app in development mode:**
 ```bash
 wails dev

@@ -6,7 +6,7 @@ This document describes the key features of Photoo, how to try them out manually
 Photoo provides a cross-platform desktop application built with Wails and React.
 
 ### How to try it out
-1. Ensure you have the Wails CLI installed.
+1. Ensure you have the Wails CLI installed. If you get `command not found: wails`, run `export PATH="$(go env GOPATH)/bin:$PATH"`.
 2. Run the application in development mode:
    ```bash
    wails dev
