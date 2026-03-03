@@ -28,13 +28,16 @@ func NewThumbnailHandler(libraryPath string) *ThumbnailHandler {
 
 func (h *ThumbnailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Thumbnail request: %s\n", r.URL.Path)
-	// Path should be like /thumbnail/2023-06-10_16-13-14.HEIC
-	filename := strings.TrimPrefix(r.URL.Path, "/thumbnail/")
-	if filename == "" {
-		fmt.Println("Error: missing filename")
-		http.Error(w, "missing filename", http.StatusBadRequest)
+
+	// Path parsing: /thumbnail/filename.ext -> filename.ext
+	// We use a more robust way to strip the prefix
+	pathParts := strings.SplitN(strings.TrimPrefix(r.URL.Path, "/"), "/", 2)
+	if len(pathParts) < 2 || pathParts[1] == "" {
+		fmt.Printf("Error: invalid thumbnail path format: %s\n", r.URL.Path)
+		http.Error(w, "invalid path", http.StatusBadRequest)
 		return
 	}
+	filename := pathParts[1]
 
 	// 1. Check Cache First
 	// Thumbnails are always saved as .jpg in the cache

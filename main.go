@@ -37,8 +37,8 @@ func main() {
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				fmt.Printf("Incoming request: %s\n", r.URL.Path)
 				if strings.HasPrefix(r.URL.Path, "/thumbnail/") {
+					fmt.Printf("[BACKEND] Custom handler matching: %s\n", r.URL.Path)
 					thumbHandler.ServeHTTP(w, r)
 					return
 				}
