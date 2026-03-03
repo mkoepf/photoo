@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
 import './App.css';
-import {GetPhotos, SelectFolder, ImportFromFolder, UpdatePhotoDate} from "../wailsjs/go/main/App";
+import {GetPhotos, SelectFolder, ImportFromFolder, UpdatePhotoDate, LogFrontendError} from "../wailsjs/go/main/App";
 import {models} from "../wailsjs/go/models";
 
 function App() {
@@ -118,6 +118,10 @@ function App() {
                                     alt={photo.filename} 
                                     className="thumbnail"
                                     loading="lazy"
+                                    onError={(e) => {
+                                        const target = e.target as HTMLImageElement;
+                                        LogFrontendError(`Failed to load thumbnail: ${target.src}`);
+                                    }}
                                 />
                                 <div className="photo-info">
                                     <span className="date">{safeFormatDate(photo.date_taken, false)}</span>

@@ -126,3 +126,8 @@ func (a *App) UpdatePhotoDate(photoID int64, newDate string) error {
 
 	return a.manager.UpdateMetadata(photoID, "date_taken", parsedDate)
 }
+
+// LogFrontendError allows the frontend to log errors to the Go terminal
+func (a *App) LogFrontendError(message string) {
+	fmt.Printf("[FRONTEND ERROR] %s\n", message)
+}
