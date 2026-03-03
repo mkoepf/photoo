@@ -6,8 +6,8 @@ export function GetPhotos():Promise<Array<models.Photo>>;
 
 export function ImportFromFolder(arg1:string):Promise<number>;
 
-export function SelectFolder():Promise<string>;
-
 export function LogFrontendError(arg1:string):Promise<void>;
+
+export function SelectFolder():Promise<string>;
 
 export function UpdatePhotoDate(arg1:number,arg2:string):Promise<void>;

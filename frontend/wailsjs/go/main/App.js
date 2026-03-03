@@ -10,12 +10,12 @@ export function ImportFromFolder(arg1) {
   return window['go']['main']['App']['ImportFromFolder'](arg1);
 }
 
-export function SelectFolder() {
-  return window['go']['main']['App']['SelectFolder']();
-}
-
 export function LogFrontendError(arg1) {
   return window['go']['main']['App']['LogFrontendError'](arg1);
+}
+
+export function SelectFolder() {
+  return window['go']['main']['App']['SelectFolder']();
 }
 
 export function UpdatePhotoDate(arg1, arg2) {

@@ -3,14 +3,15 @@ package library
 import (
 	"image"
 	_ "image/jpeg"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"photoo/internal/db"
-	"strings"
 	"testing"
 )
 
-func TestThumbnailServingLogic(t *testing.T) {
+func TestThumbnailHTTPHandler(t *testing.T) {
 	// 1. Setup temporary environment
 	tempDir, err := os.MkdirTemp("", "photoo-test-*")
 	if err != nil {
@@ -42,36 +43,36 @@ func TestThumbnailServingLogic(t *testing.T) {
 		t.Fatalf("Failed to import photo: %v", err)
 	}
 
-	// 3. Verify the file exists in the library
-	fullPath := filepath.Join(libPath, photo.Filename)
-	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
-		t.Fatalf("Imported file does not exist at %s", fullPath)
+	// 3. Setup the Handler
+	handler := NewThumbnailHandler(libPath)
+
+	// 4. Perform HTTP request
+	// Note: The handler expects the full URL path starting with /thumbnail/
+	req := httptest.NewRequest("GET", "/thumbnail/"+photo.Filename, nil)
+	rr := httptest.NewRecorder()
+
+	handler.ServeHTTP(rr, req)
+
+	// 5. Verify Response
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("Handler returned wrong status code: got %v want %v", status, http.StatusOK)
 	}
 
-	// 4. Test logic that matches the ServeHTTP implementation
-	requestPath := "/thumbnail/" + photo.Filename
-	filename := strings.TrimPrefix(requestPath, "/thumbnail/")
-	if filename != photo.Filename {
-		t.Errorf("Path parsing failed: expected %s, got %s", photo.Filename, filename)
+	contentType := rr.Header().Get("Content-Type")
+	if contentType != "image/jpeg" {
+		t.Errorf("Handler returned wrong content type: got %v want %v", contentType, "image/jpeg")
 	}
 
-	testFullPath := filepath.Join(libPath, filename)
-	if _, err := os.Stat(testFullPath); os.IsNotExist(err) {
-		t.Fatalf("Handler would fail to find file at %s", testFullPath)
+	if len(rr.Body.Bytes()) == 0 {
+		t.Error("Handler returned empty body")
 	}
 
-	// Try to open it as an image (simulating imaging.Open)
-	f, err := os.Open(testFullPath)
+	// Verify it's actually an image
+	_, format, err := image.Decode(rr.Body)
 	if err != nil {
-		t.Fatalf("Failed to open file: %v", err)
-	}
-	defer f.Close()
-
-	_, format, err := image.Decode(f)
-	if err != nil {
-		t.Fatalf("Failed to decode image: %v", err)
+		t.Fatalf("Failed to decode response body as image: %v", err)
 	}
 	if format != "jpeg" {
-		t.Errorf("Expected jpeg, got %s", format)
+		t.Errorf("Expected jpeg response, got %s", format)
 	}
 }
