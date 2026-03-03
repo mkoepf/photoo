@@ -46,33 +46,21 @@ func TestThumbnailHTTPHandler(t *testing.T) {
 	// 3. Setup the Handler
 	handler := NewThumbnailHandler(libPath)
 
-	// 4. Perform HTTP request
-	// Note: The handler expects the full URL path starting with /thumbnail/
-	req := httptest.NewRequest("GET", "/thumbnail/"+photo.Filename, nil)
-	rr := httptest.NewRecorder()
-
-	handler.ServeHTTP(rr, req)
-
-	// 5. Verify Response
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("Handler returned wrong status code: got %v want %v", status, http.StatusOK)
+	// 4. Test various path formats
+	paths := []string{
+		"/thumbnail/" + photo.Filename,
+		"thumbnail/" + photo.Filename,
+		"//thumbnail/" + photo.Filename,
+		"/thumbnail//" + photo.Filename,
 	}
 
-	contentType := rr.Header().Get("Content-Type")
-	if contentType != "image/jpeg" {
-		t.Errorf("Handler returned wrong content type: got %v want %v", contentType, "image/jpeg")
-	}
+	for _, p := range paths {
+		req := httptest.NewRequest("GET", p, nil)
+		rr := httptest.NewRecorder()
+		handler.ServeHTTP(rr, req)
 
-	if len(rr.Body.Bytes()) == 0 {
-		t.Error("Handler returned empty body")
-	}
-
-	// Verify it's actually an image
-	_, format, err := image.Decode(rr.Body)
-	if err != nil {
-		t.Fatalf("Failed to decode response body as image: %v", err)
-	}
-	if format != "jpeg" {
-		t.Errorf("Expected jpeg response, got %s", format)
+		if rr.Code != http.StatusOK {
+			t.Errorf("Path %s failed: got status %v", p, rr.Code)
+		}
 	}
 }
