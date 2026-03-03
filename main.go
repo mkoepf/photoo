@@ -2,8 +2,9 @@ package main
 
 import (
 	"embed"
-	"io/fs"
 	"net/http"
+	"path/filepath"
+	"strings"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -17,26 +18,27 @@ func main() {
 	// Create an instance of the app structure
 	app := NewApp()
 
-	// Get a sub-filesystem for the frontend assets
-	frontendDist, _ := fs.Sub(assets, "frontend/dist")
+	// Get absolute path for library to ensure it's found during dev and prod
+	libPath, err := filepath.Abs("library")
+	if err != nil {
+		libPath = "library" // Fallback
+	}
 
 	// Create thumbnail handler
-	thumbHandler := NewThumbnailHandler("library")
+	thumbHandler := NewThumbnailHandler(libPath)
 
 	// Create application with options
-	err := wails.Run(&options.App{
+	err = wails.Run(&options.App{
 		Title:  "photoo",
 		Width:  1024,
 		Height: 768,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if len(r.URL.Path) >= 11 && r.URL.Path[:11] == "/thumbnail/" {
+				if strings.HasPrefix(r.URL.Path, "/thumbnail/") {
 					thumbHandler.ServeHTTP(w, r)
 					return
 				}
-				// Default handler for assets
-				http.FileServer(http.FS(frontendDist)).ServeHTTP(w, r)
 			}),
 		},
 		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},

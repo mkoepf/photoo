@@ -27,9 +27,11 @@ func NewThumbnailHandler(libraryPath string) *ThumbnailHandler {
 }
 
 func (h *ThumbnailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("Thumbnail request: %s\n", r.URL.Path)
 	// Path should be like /thumbnail/2023-06-10_16-13-14.HEIC
 	filename := strings.TrimPrefix(r.URL.Path, "/thumbnail/")
 	if filename == "" {
+		fmt.Println("Error: missing filename")
 		http.Error(w, "missing filename", http.StatusBadRequest)
 		return
 	}
@@ -40,6 +42,7 @@ func (h *ThumbnailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	cacheFullPath := filepath.Join(h.cachePath, cacheFilename)
 
 	if _, err := os.Stat(cacheFullPath); err == nil {
+		fmt.Printf("Serving from cache: %s\n", cacheFullPath)
 		// Serve cached thumbnail
 		http.ServeFile(w, r, cacheFullPath)
 		return
@@ -47,7 +50,9 @@ func (h *ThumbnailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// 2. Generate if not cached
 	fullPath := filepath.Join(h.libraryPath, filename)
+	fmt.Printf("Generating thumbnail for: %s\n", fullPath)
 	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
+		fmt.Printf("Error: file not found: %s\n", fullPath)
 		http.Error(w, "file not found", http.StatusNotFound)
 		return
 	}
