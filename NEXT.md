@@ -13,4 +13,15 @@ This document tracks the immediate development goals for the Photoo project.
     - Improve UI responsiveness for large libraries.
 - [x] **4. Metadata Editing (Backend/UI)**
     - Allow users to modify capture dates in the sidebar.
-    - Write modified metadata back to the file's EXIF data.
+- [ ] **5. Metadata Write-back (EXIF)**
+    - Implement logic to write date/location changes back to the actual file's EXIF header.
+    - Ensure the library file remains the "source of truth".
+- [ ] **6. Virtualized Timeline Grid**
+    - Group photos by Month/Year in the UI.
+    - Use virtualization (e.g., `react-window`) to handle thousands of photos smoothly.
+- [ ] **7. Metadata History & Undo UI**
+    - Create a view to browse the `metadata_history` table.
+    - Add functionality to revert changes to a previous state.
+- [ ] **8. Video Support**
+    - Support importing `.mp4` and `.mov` files.
+    - Implement basic thumbnail extraction for video files.
