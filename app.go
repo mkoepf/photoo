@@ -131,3 +131,8 @@ func (a *App) UpdatePhotoDate(photoID int64, newDate string) error {
 func (a *App) LogFrontendError(message string) {
 	fmt.Printf("[FRONTEND ERROR] %s\n", message)
 }
+
+// LogUIState allows the frontend to report its full state for debugging/automation
+func (a *App) LogUIState(state string) {
+	fmt.Printf("[UI STATE] %s\n", state)
+}

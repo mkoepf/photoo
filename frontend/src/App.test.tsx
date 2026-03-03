@@ -9,6 +9,8 @@ vi.mock('../wailsjs/go/main/App', () => ({
   SelectFolder: vi.fn(),
   ImportFromFolder: vi.fn(),
   UpdatePhotoDate: vi.fn(),
+  LogFrontendError: vi.fn(),
+  LogUIState: vi.fn(),
 }));
 
 describe('App Component', () => {

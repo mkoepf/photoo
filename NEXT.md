@@ -25,3 +25,6 @@ This document tracks the immediate development goals for the Photoo project.
 - [ ] **8. Video Support**
     - Support importing `.mp4` and `.mov` files.
     - Implement basic thumbnail extraction for video files.
+
+## Technical Debt / Known Issues
+- [ ] **Routing in `wails dev` (Scenario A):** Thumbnail requests (`/thumbnail/...`) are being intercepted by the frontend dev server/proxy and do not reach the Go backend custom handler. Needs investigation of Wails v2 asset serving priorities in development mode.

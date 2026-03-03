@@ -14,6 +14,10 @@ export function LogFrontendError(arg1) {
   return window['go']['main']['App']['LogFrontendError'](arg1);
 }
 
+export function LogUIState(arg1) {
+  return window['go']['main']['App']['LogUIState'](arg1);
+}
+
 export function SelectFolder() {
   return window['go']['main']['App']['SelectFolder']();
 }

@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
 import './App.css';
-import {GetPhotos, SelectFolder, ImportFromFolder, UpdatePhotoDate, LogFrontendError} from "../wailsjs/go/main/App";
+import {GetPhotos, SelectFolder, ImportFromFolder, UpdatePhotoDate, LogFrontendError, LogUIState} from "../wailsjs/go/main/App";
 import {models} from "../wailsjs/go/models";
 
 function App() {
@@ -38,6 +38,24 @@ function App() {
 
     useEffect(() => {
         loadPhotos();
+
+        // Automated Sanity Monitor (The "Eyes")
+        const monitorInterval = setInterval(() => {
+            const images = document.querySelectorAll('img.thumbnail');
+            const total = images.length;
+            const broken = Array.from(images).filter(img => (img as HTMLImageElement).naturalWidth === 0).length;
+            
+            if (total > 0) {
+                LogUIState(JSON.stringify({
+                    type: "sanity_check",
+                    totalImages: total,
+                    brokenImages: broken,
+                    timestamp: new Date().toISOString()
+                }));
+            }
+        }, 5000);
+
+        return () => clearInterval(monitorInterval);
     }, []);
 
     useEffect(() => {
