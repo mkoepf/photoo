@@ -5,6 +5,11 @@
 
 set -e
 
+# --- Environment ---
+# Enforce consistent locale for date formatting in tests
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
 # --- Configuration & Colors ---
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -14,7 +19,7 @@ NC='\033[0m' # No Color
 
 echo -e "${BLUE}--- Starting Photoo Code Quality Checks ---${NC}"
 
-# --- 1. Frontend Check & Build ---
+# --- 1. Frontend Build, Type-check, Test, Lint ---
 # MUST BE FIRST because Go embedding (main.go) requires frontend/dist
 if [ -d "frontend" ]; then
     echo -e "1. Checking Frontend (React/TS)..."
@@ -22,7 +27,7 @@ if [ -d "frontend" ]; then
     
     echo -n "   - Syncing dependencies... "
     if [ -f "package-lock.json" ]; then
-        npm ci --silent
+        npm ci --silent || npm install --silent
     else
         npm install --silent
     fi
@@ -41,9 +46,9 @@ if [ -d "frontend" ]; then
     echo -e "${GREEN}PASSED${NC}"
 
     # If a lint script exists in package.json
-    if grep -q "lint" package.json; then
+    if grep -q "\"lint\":" package.json; then
         echo -n "   - Running frontend lint... "
-        npm run lint
+        npm run lint --silent
         echo -e "${GREEN}PASSED${NC}"
     fi
     cd ..
@@ -53,11 +58,10 @@ fi
 
 # --- 2. Go Formatting Check ---
 echo -n "2. Checking Go formatting (gofmt)... "
-UNFORMATTED=$(gofmt -l . | grep -v "wailsjs" || true)
-if [ -n "$UNFORMATTED" ]; then
+if [ -n "$(gofmt -l . | grep -v 'wailsjs' || true)" ]; then
     echo -e "${RED}FAILED${NC}"
-    echo -e "The following files are not formatted correctly:"
-    echo "$UNFORMATTED"
+    echo "The following files are not formatted correctly:"
+    gofmt -l . | grep -v 'wailsjs'
     echo -e "${YELLOW}Run 'go fmt ./...' to fix this.${NC}"
     exit 1
 fi
