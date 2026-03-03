@@ -35,6 +35,7 @@ func main() {
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				// Debug log for routing
 				if strings.HasPrefix(r.URL.Path, "/thumbnail/") {
 					thumbHandler.ServeHTTP(w, r)
 					return
