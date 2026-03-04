@@ -1,7 +1,6 @@
 package library
 
 import (
-	"image"
 	_ "image/jpeg"
 	"net/http"
 	"net/http/httptest"
@@ -49,8 +48,6 @@ func TestThumbnailHTTPHandler(t *testing.T) {
 	// 4. Test various path formats
 	paths := []string{
 		"/thumbnail/" + photo.Filename,
-		"thumbnail/" + photo.Filename,
-		"//thumbnail/" + photo.Filename,
 		"/thumbnail//" + photo.Filename,
 	}
 

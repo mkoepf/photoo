@@ -2,10 +2,7 @@ package main
 
 import (
 	"embed"
-	"fmt"
-	"net/http"
 	"path/filepath"
-	"strings"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
