@@ -27,17 +27,20 @@ func NewThumbnailHandler(libraryPath string) *ThumbnailHandler {
 }
 
 func (h *ThumbnailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("Thumbnail request: %s\n", r.URL.Path)
+	// ONLY handle requests starting with /thumbnail/
+	if !strings.HasPrefix(r.URL.Path, "/thumbnail/") {
+		return
+	}
+
+	fmt.Printf("[BACKEND] Thumbnail request: %s\n", r.URL.Path)
 
 	// Path parsing: /thumbnail/filename.ext -> filename.ext
-	// We use a more robust way to strip the prefix
-	pathParts := strings.SplitN(strings.TrimPrefix(r.URL.Path, "/"), "/", 2)
-	if len(pathParts) < 2 || pathParts[1] == "" {
-		fmt.Printf("Error: invalid thumbnail path format: %s\n", r.URL.Path)
+	filename := strings.TrimPrefix(r.URL.Path, "/thumbnail/")
+	if filename == "" {
+		fmt.Printf("[BACKEND] Error: missing filename in path: %s\n", r.URL.Path)
 		http.Error(w, "invalid path", http.StatusBadRequest)
 		return
 	}
-	filename := pathParts[1]
 
 	// 1. Check Cache First
 	// Thumbnails are always saved as .jpg in the cache
@@ -45,7 +48,7 @@ func (h *ThumbnailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	cacheFullPath := filepath.Join(h.cachePath, cacheFilename)
 
 	if _, err := os.Stat(cacheFullPath); err == nil {
-		fmt.Printf("Serving from cache: %s\n", cacheFullPath)
+		fmt.Printf("[BACKEND] Serving from cache: %s\n", cacheFullPath)
 		// Serve cached thumbnail
 		http.ServeFile(w, r, cacheFullPath)
 		return
@@ -53,9 +56,9 @@ func (h *ThumbnailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// 2. Generate if not cached
 	fullPath := filepath.Join(h.libraryPath, filename)
-	fmt.Printf("Generating thumbnail for: %s\n", fullPath)
+	fmt.Printf("[BACKEND] Generating thumbnail for: %s\n", fullPath)
 	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
-		fmt.Printf("Error: file not found: %s\n", fullPath)
+		fmt.Printf("[BACKEND] Error: file not found: %s\n", fullPath)
 		http.Error(w, "file not found", http.StatusNotFound)
 		return
 	}
@@ -92,7 +95,7 @@ func (h *ThumbnailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err = imaging.Save(thumbnail, cacheFullPath)
 	if err != nil {
 		// Log error but continue serving the generated thumbnail
-		fmt.Printf("Failed to save thumbnail to cache: %v\n", err)
+		fmt.Printf("[BACKEND] Failed to save thumbnail to cache: %v\n", err)
 	}
 
 	// Set content type

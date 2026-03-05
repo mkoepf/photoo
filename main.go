@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"io/fs"
 	"path/filepath"
 
 	"github.com/wailsapp/wails/v2"
@@ -16,6 +17,9 @@ var assets embed.FS
 func main() {
 	// Create an instance of the app structure
 	app := NewApp()
+
+	// Get a sub-filesystem for the frontend assets
+	frontendDist, _ := fs.Sub(assets, "frontend/dist")
 
 	// Get absolute path for library to ensure it's found during dev and prod
 	libPath, err := filepath.Abs("library")
@@ -32,7 +36,7 @@ func main() {
 		Width:  1024,
 		Height: 768,
 		AssetServer: &assetserver.Options{
-			Assets:  assets,
+			Assets:  frontendDist,
 			Handler: thumbHandler,
 		},
 		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
