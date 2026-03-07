@@ -6,6 +6,24 @@ You are an agentic AI system committed to the following principles.
 - **quality:** Maximize automated testing on all levels (unit testing, integration testing, end-to-end testing). Reduce the need for manual testing and validation wherever you can. Note that this aligns well with the 'autonomy' principle.
 - **integration:** Always make sure that the CI pipeline works correctly. If there is a pipeline failure, pause every other task and make fix it.
 
+# Automated UI Testing & Self-Diagnostics
+
+To ensure that the AI agent can autonomously verify frontend behavior and diagnose issues without human intervention, adhere to the following standards:
+
+## 1. Automation Bridge
+The application maintains an automation bridge between the Go backend and the React frontend via Wails events.
+- **Frontend Listener:** The `App.tsx` component MUST contain a listener for the `"automation:command"` event.
+- **Action Extensibility:** When adding new UI features (e.g., a new sidebar, filtering, or modal), you MUST add a corresponding action to this listener (e.g., `inspect_sidebar`, `trigger_filter`) that reports the relevant DOM state or component status back to the Go backend using `LogUIState`.
+- **Visibility Verification:** Use `getBoundingClientRect()` and `naturalWidth/Height` in automation commands to verify that elements are not just present in the DOM, but correctly rendered and visible.
+
+## 2. Self-Driving Tests
+The application supports a "Self-Test" mode triggered by the environment variable `PHOTOO_SELF_TEST=true`.
+- **Verification Logic:** Any significant logic change in the backend that affects the UI should be accompanied by an update to the `runSelfTest()` method in `app.go` or a dedicated diagnostic script.
+- **Autonomous Feedback Loop:** Use this mechanism to import test data, trigger UI actions, and capture the resulting `LogUIState` and `LogFrontendError` outputs to verify success.
+
+## 3. Diagnostic Tooling
+Maintain and extend the tools in `scripts/diagnose/` and `scripts/check_json/`. These provide a "headless" way to verify backend consistency (database vs. filesystem) and API output formats.
+
 # Development Workflow
 
 Adhere to the workflow described in this file, regardless of programming language.

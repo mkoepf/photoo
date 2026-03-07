@@ -1,0 +1,139 @@
+[0;92mWails CLI[0m [0;31mv2.11.0[0m
+
+[0;92mExecuting: go mod tidy[0m
+  [90m[90m•[0m[0m [39m[39mGenerating bindings: [0m[0m2026/03/07 00:48:50 [0;33mKnownStructs: library.ThumbnailHandler	models.Photo
+Not found: time.Time
+KnownStructs: library.ThumbnailHandler	models.Photo
+Not found: time.Time
+[0m
+Done.
+  [90m[90m•[0m[0m [39m[39mInstalling frontend dependencies: [0m[0mDone.
+  [90m[90m•[0m[0m [39m[39mCompiling frontend: [0m[0mDone.
+
+> frontend@0.0.0 dev
+> vite
+
+
+  VITE v7.3.1  ready in 135 ms
+
+[0;92mVite Server URL: http://localhost:5173/[0m
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+[0;92mRunning frontend DevWatcher command: 'npm run dev'[0m
+Building application for development...
+  [90m[90m•[0m[0m [39m[39mGenerating bindings: [0m[0m2026/03/07 00:48:55 [0;33mKnownStructs: library.ThumbnailHandler	models.Photo
+Not found: time.Time
+KnownStructs: library.ThumbnailHandler	models.Photo
+Not found: time.Time
+[0m
+Done.
+  [90m[90m•[0m[0m [39m[39mCompiling application: [0m[0m# photoo
+ld: warning: object file (/private/var/folders/g6/wc007lrn5g1f_6tn2j15jscr0000gn/T/go-link-521890054/000007.o) was built for newer 'macOS' version (26.0) than being linked (11.0)
+Done.
+  [90m[90m•[0m[0m [39m[39mPackaging application: [0m[0mDone.
+[30;43m[30;43m WARNING [0m[0m [33m[33mThis darwin build contains the use of private APIs. This will not pass Apple's AppStore approval process. Please use it only as a test build for testing and debug purposes.[0m[0m
+
+[0;92mUsing DevServer URL: http://localhost:34115[0m
+[0;92mUsing Frontend DevServer URL: http://localhost:5173/[0m
+[0;92mUsing reload debounce setting of 100 milliseconds[0m
+[BACKEND] Using library path: /Users/mhk/Code/bench-photoo/photoo/library_self_test
+INF | Serving assets from frontend DevServer URL: http://localhost:5173/
+2026/03/07 00:48:58 Database schema initialized.
+[0;92mWatching (sub)/directory: /Users/mhk/Code/bench-photoo/photoo[0m
+[0;92mAdded new directory to watcher: /Users/mhk/Code/bench-photoo/photoo/library_self_test[0m
+[0;92m
+
+To develop in the browser and call your bound Go methods from Javascript, navigate to: http://localhost:34115[0m
+[AUTO] Starting Self Test...
+[AUTO] Importing from /Users/mhk/Code/bench-photoo/photoo/test_data/source_digital_camera
+[UI STATE] [AUTO] Triggering import for path: /Users/mhk/Code/bench-photoo/photoo/test_data/source_digital_camera
+[UI STATE] [AUTO] Triggering import for path: /Users/mhk/Code/bench-photoo/photoo/test_data/source_digital_camera
+[0;92mAdded new directory to watcher: /Users/mhk/Code/bench-photoo/photoo/library_self_test/2011[0m
+[BACKEND] Import error for /Users/mhk/Code/bench-photoo/photoo/test_data/source_digital_camera/RIMG0018.JPG: failed to save photo to database: database is locked (5) (SQLITE_BUSY)
+[BACKEND] Import error for /Users/mhk/Code/bench-photoo/photoo/test_data/source_digital_camera/RIMG0020.JPG: failed to save photo to database: database is locked (5) (SQLITE_BUSY)
+[BACKEND] Import error for /Users/mhk/Code/bench-photoo/photoo/test_data/source_digital_camera/RIMG0024.JPG: failed to save photo to database: database is locked (5) (SQLITE_BUSY)
+[UI STATE] [AUTO] Import complete. Count: 2
+[UI STATE] [AUTO] Import complete. Count: 1
+[UI STATE] [AUTO] Loading thumbnails for 3 photos
+[BACKEND] Thumbnail request received: /thumbnail/2011/08/10/2011-08-10_17-59-39.JPG
+[BACKEND] Generating thumbnail for: /Users/mhk/Code/bench-photoo/photoo/library_self_test/2011/08/10/2011-08-10_17-59-39.JPG
+[BACKEND] Thumbnail request received: /thumbnail/2011/08/10/2011-08-10_10-31-29.JPG
+[BACKEND] Generating thumbnail for: /Users/mhk/Code/bench-photoo/photoo/library_self_test/2011/08/10/2011-08-10_10-31-29.JPG
+[BACKEND] Thumbnail request received: /thumbnail/2011/08/10/2011-08-10_10-30-36.JPG
+[BACKEND] Generating thumbnail for: /Users/mhk/Code/bench-photoo/photoo/library_self_test/2011/08/10/2011-08-10_10-30-36.JPG
+[BACKEND] Thumbnail request received: /thumbnail/2011/08/10/2011-08-10_10-31-29.JPG
+[BACKEND] Thumbnail request received: /thumbnail/2011/08/10/2011-08-10_10-30-36.JPG
+[BACKEND] Generating thumbnail for: /Users/mhk/Code/bench-photoo/photoo/library_self_test/2011/08/10/2011-08-10_10-30-36.JPG
+[BACKEND] Thumbnail request received: /thumbnail/2011/08/10/2011-08-10_17-59-39.JPG
+[BACKEND] Generating thumbnail for: /Users/mhk/Code/bench-photoo/photoo/library_self_test/2011/08/10/2011-08-10_17-59-39.JPG
+[BACKEND] Generating thumbnail for: /Users/mhk/Code/bench-photoo/photoo/library_self_test/2011/08/10/2011-08-10_10-31-29.JPG
+[UI STATE] [AUTO] Loading thumbnails for 3 photos
+[BACKEND] Successfully served thumbnail: 2011/08/10/2011-08-10_10-30-36.JPG
+[BACKEND] Successfully served thumbnail: 2011/08/10/2011-08-10_10-31-29.JPG
+[BACKEND] Successfully served thumbnail: 2011/08/10/2011-08-10_17-59-39.JPG
+[BACKEND] Successfully served thumbnail: 2011/08/10/2011-08-10_10-30-36.JPG
+[BACKEND] Successfully served thumbnail: 2011/08/10/2011-08-10_17-59-39.JPG
+[BACKEND] Successfully served thumbnail: 2011/08/10/2011-08-10_10-31-29.JPG
+[UI STATE] {"type":"sanity_check","totalImages":3,"brokenImages":0,"timestamp":"2026-03-06T23:49:30.022Z"}
+[UI STATE] [AUTO] Loading thumbnails for 3 photos
+[UI STATE] [AUTO] Loading thumbnails for 3 photos
+[UI STATE] [AUTO] Loading thumbnails for 3 photos
+[UI STATE] [AUTO] Loading thumbnails for 3 photos
+[UI STATE] {"type":"sanity_check","totalImages":3,"brokenImages":0,"timestamp":"2026-03-06T23:49:36.119Z"}
+[AUTO] Verifying folder structure...
+[AUTO] Found file: /Users/mhk/Code/bench-photoo/photoo/library_self_test/.thumbnails/2011_08_10_2011-08-10_10-30-36.JPG.thumb.jpg
+[AUTO] Found file: /Users/mhk/Code/bench-photoo/photoo/library_self_test/.thumbnails/2011_08_10_2011-08-10_10-31-29.JPG.thumb.jpg
+[AUTO] Found file: /Users/mhk/Code/bench-photoo/photoo/library_self_test/.thumbnails/2011_08_10_2011-08-10_17-59-39.JPG.thumb.jpg
+[AUTO] Found file: /Users/mhk/Code/bench-photoo/photoo/library_self_test/2011/08/10/2011-08-10_10-30-36.JPG
+[AUTO] Found file: /Users/mhk/Code/bench-photoo/photoo/library_self_test/2011/08/10/2011-08-10_10-30-36_1.JPG
+[AUTO] Found file: /Users/mhk/Code/bench-photoo/photoo/library_self_test/2011/08/10/2011-08-10_10-31-29.JPG
+[AUTO] Found file: /Users/mhk/Code/bench-photoo/photoo/library_self_test/2011/08/10/2011-08-10_17-59-39.JPG
+[AUTO] Requesting thumbnail inspection...
+[UI STATE] {"type":"thumbnail_inspection","count":3,"details":[{"src":"data:image/jpeg;base64,/9j/2wCEAAIBAQEBAQIBAQECAgI","complete":true,"naturalWidth":300,"naturalHeight":300,"alt":"2011/08/10/2011-08-10_17-59-39.JPG","rect":{"x":34,"y":95,"width":218,"height":218,"top":95,"right":252,"bottom":313,"left":34}},{"src":"data:image/jpeg;base64,/9j/2wCEAAIBAQEBAQIBAQECAgI","complete":true,"naturalWidth":300,"naturalHeight":300,"alt":"2011/08/10/2011-08-10_10-31-29.JPG","rect":{"x":280,"y":95,"width":218,"height":218,"top":95,"right":498,"bottom":313,"left":280}},{"src":"data:image/jpeg;base64,/9j/2wCEAAIBAQEBAQIBAQECAgI","complete":true,"naturalWidth":300,"naturalHeight":300,"alt":"2011/08/10/2011-08-10_10-30-36.JPG","rect":{"x":526,"y":95,"width":218,"height":218,"top":95,"right":744,"bottom":313,"left":526}}],"timestamp":"2026-03-06T23:49:38.241Z"}
+[UI STATE] {"type":"thumbnail_inspection","count":3,"details":[{"src":"data:image/jpeg;base64,/9j/2wCEAAIBAQEBAQIBAQECAgI","complete":true,"naturalWidth":300,"naturalHeight":300,"alt":"2011/08/10/2011-08-10_17-59-39.JPG","rect":{"x":34,"y":95,"width":218,"height":218,"top":95,"right":252,"bottom":313,"left":34}},{"src":"data:image/jpeg;base64,/9j/2wCEAAIBAQEBAQIBAQECAgI","complete":true,"naturalWidth":300,"naturalHeight":300,"alt":"2011/08/10/2011-08-10_10-31-29.JPG","rect":{"x":280,"y":95,"width":218,"height":218,"top":95,"right":498,"bottom":313,"left":280}},{"src":"data:image/jpeg;base64,/9j/2wCEAAIBAQEBAQIBAQECAgI","complete":true,"naturalWidth":300,"naturalHeight":300,"alt":"2011/08/10/2011-08-10_10-30-36.JPG","rect":{"x":526,"y":95,"width":218,"height":218,"top":95,"right":744,"bottom":313,"left":526}}],"timestamp":"2026-03-06T23:49:38.242Z"}
+[UI STATE] {"type":"sanity_check","totalImages":3,"brokenImages":0,"timestamp":"2026-03-06T23:49:42.022Z"}
+[UI STATE] {"type":"sanity_check","totalImages":3,"brokenImages":0,"timestamp":"2026-03-06T23:49:48.120Z"}
+[UI STATE] {"type":"sanity_check","totalImages":3,"brokenImages":0,"timestamp":"2026-03-06T23:49:54.120Z"}
+[UI STATE] {"type":"sanity_check","totalImages":3,"brokenImages":0,"timestamp":"2026-03-06T23:50:00.119Z"}
+[UI STATE] {"type":"sanity_check","totalImages":3,"brokenImages":0,"timestamp":"2026-03-06T23:50:06.122Z"}
+[UI STATE] {"type":"sanity_check","totalImages":3,"brokenImages":0,"timestamp":"2026-03-06T23:50:12.120Z"}
+[UI STATE] {"type":"sanity_check","totalImages":3,"brokenImages":0,"timestamp":"2026-03-06T23:50:18.120Z"}
+[UI STATE] {"type":"sanity_check","totalImages":3,"brokenImages":0,"timestamp":"2026-03-06T23:50:24.121Z"}
+[UI STATE] {"type":"sanity_check","totalImages":3,"brokenImages":0,"timestamp":"2026-03-06T23:50:30.120Z"}
+[UI STATE] {"type":"sanity_check","totalImages":3,"brokenImages":0,"timestamp":"2026-03-06T23:50:36.120Z"}
+[UI STATE] {"type":"sanity_check","totalImages":3,"brokenImages":0,"timestamp":"2026-03-06T23:50:42.121Z"}
+node:events:486
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: write EPIPE
+    at afterWriteDispatched (node:internal/stream_base_commons:159:15)
+    at writeGeneric (node:internal/stream_base_commons:150:3)
+    at Socket._writeGeneric (node:net:1025:11)
+    at Socket._write (node:net:1037:8)
+    at writeOrBuffer (node:internal/streams/writable:570:12)
+    at _write (node:internal/streams/writable:499:10)
+    at Writable.write (node:internal/streams/writable:508:10)
+    at console.value (node:internal/console/constructor:313:16)
+    at console.log (node:internal/console/constructor:416:26)
+    at output (file:///Users/mhk/Code/bench-photoo/photoo/frontend/node_modules/vite/dist/node/chunks/logger.js:289:26)
+    at Object.info (file:///Users/mhk/Code/bench-photoo/photoo/frontend/node_modules/vite/dist/node/chunks/logger.js:296:4)
+    at Object.info (file:///Users/mhk/Code/bench-photoo/photoo/frontend/node_modules/vite/dist/node/chunks/config.js:29315:34)
+    at updateModules (file:///Users/mhk/Code/bench-photoo/photoo/frontend/node_modules/vite/dist/node/chunks/config.js:26123:21)
+    at hmr (file:///Users/mhk/Code/bench-photoo/photoo/frontend/node_modules/vite/dist/node/chunks/config.js:26064:4)
+    at file:///Users/mhk/Code/bench-photoo/photoo/frontend/node_modules/vite/dist/node/chunks/config.js:26073:80
+    at Array.map (<anonymous>)
+    at file:///Users/mhk/Code/bench-photoo/photoo/frontend/node_modules/vite/dist/node/chunks/config.js:26073:59
+    at handleHMRUpdate (file:///Users/mhk/Code/bench-photoo/photoo/frontend/node_modules/vite/dist/node/chunks/config.js:26074:5)
+    at async onHMRUpdate (file:///Users/mhk/Code/bench-photoo/photoo/frontend/node_modules/vite/dist/node/chunks/config.js:25556:35)
+    at async FSWatcher.<anonymous> (file:///Users/mhk/Code/bench-photoo/photoo/frontend/node_modules/vite/dist/node/chunks/config.js:25581:3)
+Emitted 'error' event on Socket instance at:
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  errno: -32,
+  code: 'EPIPE',
+  syscall: 'write'
+}
+
+Node.js v25.6.1

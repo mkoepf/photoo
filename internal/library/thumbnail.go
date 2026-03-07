@@ -7,14 +7,18 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/disintegration/imaging"
-	"github.com/jdeng/goheif"
 )
 
 type ThumbnailHandler struct {
 	libraryPath string
 	cachePath   string
+	History     []string
+	semaphore   chan struct{}
+	locks       sync.Map // Map of filename -> *sync.Mutex
 }
 
 func NewThumbnailHandler(libraryPath string) *ThumbnailHandler {
@@ -23,50 +27,78 @@ func NewThumbnailHandler(libraryPath string) *ThumbnailHandler {
 	return &ThumbnailHandler{
 		libraryPath: libraryPath,
 		cachePath:   cachePath,
+		History:     make([]string, 0),
+		semaphore:   make(chan struct{}, 4), // Limit to 4 concurrent decodes
 	}
 }
 
 func (h *ThumbnailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// ONLY handle requests starting with /thumbnail/
-	if !strings.HasPrefix(r.URL.Path, "/thumbnail/") {
+	path := r.URL.Path
+	h.History = append(h.History, fmt.Sprintf("[%s] %s %s", time.Now().Format("15:04:05"), r.Method, path))
+	if len(h.History) > 100 {
+		h.History = h.History[1:]
+	}
+
+	// Support both /thumbnail/ and thumbnail/
+	if !strings.HasPrefix(path, "/thumbnail/") && !strings.HasPrefix(path, "thumbnail/") {
 		return
 	}
 
-	fmt.Printf("[BACKEND] Thumbnail request: %s\n", r.URL.Path)
+	// Path parsing: /thumbnail/filename.ext or thumbnail/filename.ext -> filename.ext
+	trimmed := strings.TrimLeft(path, "/")
+	if !strings.HasPrefix(trimmed, "thumbnail/") {
+		return
+	}
 
-	// Path parsing: /thumbnail/filename.ext -> filename.ext
-	filename := strings.TrimPrefix(r.URL.Path, "/thumbnail/")
+	filename := strings.TrimPrefix(trimmed, "thumbnail/")
+	filename = strings.TrimLeft(filename, "/")
+
 	if filename == "" {
-		fmt.Printf("[BACKEND] Error: missing filename in path: %s\n", r.URL.Path)
 		http.Error(w, "invalid path", http.StatusBadRequest)
 		return
 	}
 
-	// 1. Check Cache First
-	// Thumbnails are always saved as .jpg in the cache
-	cacheFilename := filename + ".thumb.jpg"
+	// replace slashes with underscores for flat cache
+	safeName := strings.ReplaceAll(filename, "/", "_")
+	safeName = strings.ReplaceAll(safeName, "\\", "_")
+	cacheFilename := safeName + ".thumb.jpg"
 	cacheFullPath := filepath.Join(h.cachePath, cacheFilename)
 
+	// 1. Check Cache First
 	if _, err := os.Stat(cacheFullPath); err == nil {
-		fmt.Printf("[BACKEND] Serving from cache: %s\n", cacheFullPath)
-		// Serve cached thumbnail
+		w.Header().Set("Content-Type", "image/jpeg")
 		http.ServeFile(w, r, cacheFullPath)
 		return
 	}
 
-	// 2. Generate if not cached
+	// 2. Lock for this specific filename to avoid redundant generation
+	actualLock, _ := h.locks.LoadOrStore(filename, &sync.Mutex{})
+	lock := actualLock.(*sync.Mutex)
+	lock.Lock()
+	defer lock.Unlock()
+
+	// Re-check cache after acquiring lock (another goroutine might have finished it)
+	if _, err := os.Stat(cacheFullPath); err == nil {
+		w.Header().Set("Content-Type", "image/jpeg")
+		http.ServeFile(w, r, cacheFullPath)
+		return
+	}
+
+	// 3. Wait for semaphore to limit total concurrent decodes
+	h.semaphore <- struct{}{}
+	defer func() { <-h.semaphore }()
+
 	fullPath := filepath.Join(h.libraryPath, filename)
-	fmt.Printf("[BACKEND] Generating thumbnail for: %s\n", fullPath)
 	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
-		fmt.Printf("[BACKEND] Error: file not found: %s\n", fullPath)
 		http.Error(w, "file not found", http.StatusNotFound)
 		return
 	}
 
-	ext := strings.ToLower(filepath.Ext(filename))
+	/* ext := strings.ToLower(filepath.Ext(filename)) */
 	var src image.Image
 	var err error
 
+	/* HEIC support disabled on ARM64 if it fails to build
 	if ext == ".heic" {
 		file, err := os.Open(fullPath)
 		if err != nil {
@@ -81,27 +113,25 @@ func (h *ThumbnailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
-		src, err = imaging.Open(fullPath)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("failed to open image: %v", err), http.StatusInternalServerError)
-			return
-		}
+	*/
+	src, err = imaging.Open(fullPath)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to open image: %v", err), http.StatusInternalServerError)
+		return
 	}
+	// }
 
 	// Create a 300x300 thumbnail
 	thumbnail := imaging.Fill(src, 300, 300, imaging.Center, imaging.Lanczos)
 
-	// 3. Save to Cache
+	// Save to Cache
+	os.MkdirAll(h.cachePath, 0755)
 	err = imaging.Save(thumbnail, cacheFullPath)
 	if err != nil {
-		// Log error but continue serving the generated thumbnail
 		fmt.Printf("[BACKEND] Failed to save thumbnail to cache: %v\n", err)
 	}
 
-	// Set content type
 	w.Header().Set("Content-Type", "image/jpeg")
-
-	// Encode to writer
 	err = imaging.Encode(w, thumbnail, imaging.JPEG)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("failed to encode thumbnail: %v", err), http.StatusInternalServerError)

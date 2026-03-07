@@ -1,30 +1,48 @@
 # Photoo - Next Steps
 
-This document tracks the immediate development goals for the Photoo project.
+This document tracks the prioritized roadmap for the Photoo project.
 
-- [x] **1. Metadata Display & Sidebar (UI)**
-    - Add a sidebar to the photo grid.
-    - Show capture date, camera model, and GPS coordinates when a photo is selected.
-- [x] **2. HEIC Thumbnail Support (Backend)**
-    - Integrate HEIF/HEIC decoding in `thumbnail.go`.
-    - Ensure iPhone photos appear correctly in the grid.
-- [x] **3. Persistent Thumbnail Cache (Backend/Performance)**
-    - Implement a hidden storage for pre-rendered thumbnails.
-    - Improve UI responsiveness for large libraries.
-- [x] **4. Metadata Editing (Backend/UI)**
-    - Allow users to modify capture dates in the sidebar.
-- [ ] **5. Metadata Write-back (EXIF)**
-    - Implement logic to write date/location changes back to the actual file's EXIF header.
-    - Ensure the library file remains the "source of truth".
-- [ ] **6. Virtualized Timeline Grid**
-    - Group photos by Month/Year in the UI.
-    - Use virtualization (e.g., `react-window`) to handle thousands of photos smoothly.
-- [ ] **7. Metadata History & Undo UI**
-    - Create a view to browse the `metadata_history` table.
-    - Add functionality to revert changes to a previous state.
-- [ ] **8. Video Support**
-    - Support importing `.mp4` and `.mov` files.
-    - Implement basic thumbnail extraction for video files.
+## High Priority (Immediate Focus)
 
-## Technical Debt / Known Issues
-- [ ] **Routing in `wails dev` (Scenario A):** Thumbnail requests (`/thumbnail/...`) are being intercepted by the frontend dev server/proxy and do not reach the Go backend custom handler. Needs investigation of Wails v2 asset serving priorities in development mode.
+- [ ] **1. Date-Based Library Organization**
+    - Implement logic to move or symlink imported photos into a structured hierarchy: `library/YYYY/MM/DD/`.
+    - Ensure the database paths are updated automatically during this movement.
+- [ ] **2. Import Progress & Status UI**
+    - Add a global progress bar or modal for active import operations.
+    - Show real-time statistics: "Processed X of Y", "Skipped Z duplicates".
+    - Log detailed import events to the automation bridge.
+- [ ] **3. Recursive Folder Scanning**
+    - Extend `ImportFromFolder` to traverse subdirectories recursively.
+    - Implement a job queue or worker pool to handle massive imports without blocking the UI.
+    - Ensure self-test coverage for deep directory structures.
+
+## Mid Priority
+
+- [ ] **4. EXIF Metadata Write-back**
+    - Implement `go-exif` logic to write edited timestamps back to the original file's EXIF header.
+    - Automatically rename the file in the library if the date changes (maintaining the `YYYY-MM-DD_HH-MM-SS` convention).
+- [ ] **5. Intelligent Duplicate Detection**
+    - Calculate SHA-256 hashes during import to skip exact file duplicates.
+    - Research/Implement Perceptual Hashing (PHash) to detect visually similar photos.
+- [ ] **6. Full-Screen Photo Viewer**
+    - Implement a lightbox view when clicking a photo in the grid.
+    - Add keyboard navigation (Left/Right arrows) and basic zoom controls.
+- [ ] **7. Video Support (.MP4, .MOV)**
+    - Extend backend managers to recognize video formats.
+    - Use `ffmpeg` (if available) or native Go libraries to extract frame thumbnails.
+
+## Low Priority (Roadmap)
+
+- [ ] **8. Advanced Filtering & Search**
+    - Add search by camera model, date range, or location.
+    - Implement "Smart Collections" (e.g., "Photos from last Summer").
+- [ ] **9. Export Functionality**
+    - Allow users to select multiple photos and export them to an external folder.
+    - Add options for resizing or stripping metadata on export.
+- [ ] **10. Selective Deletion & Pruning**
+    - Implement a "Trash" workflow to mark photos for removal.
+    - Permanently delete files from disk and records from SQLite upon confirmation.
+
+## Technical Debt / Completed
+- [x] **Fix Thumbnail Visibility (Asset Routing):** Resolved the `431` error by switching to Base64 serving and removing the Vite proxy.
+- [x] **Autonomous Testing Mandate:** Updated `GEMINI.md` to ensure all future UI features include automation hooks.

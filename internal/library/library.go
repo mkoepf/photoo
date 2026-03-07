@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"photoo/internal/exif"
@@ -53,13 +54,22 @@ func (m *Manager) ImportPhoto(sourcePath string) (*models.Photo, error) {
 	// 4. Determine Filename (YYYY-MM-DD_HH-mm-ss)
 	ext := filepath.Ext(sourcePath)
 	baseFilename := metadata.DateTaken.Format("2006-01-02_15-04-05")
-	finalFilename, err := m.findUniqueFilename(baseFilename, ext)
+
+	// Determine subfolder: YYYY/MM/DD
+	subDir := metadata.DateTaken.Format("2006/01/02")
+	targetDir := filepath.Join(m.LibraryPath, subDir)
+	if err := os.MkdirAll(targetDir, 0755); err != nil {
+		return nil, fmt.Errorf("failed to create subfolder %s: %w", subDir, err)
+	}
+
+	finalBase, err := m.findUniqueFilename(targetDir, baseFilename, ext)
 	if err != nil {
 		return nil, fmt.Errorf("failed to determine unique filename: %w", err)
 	}
+	finalFilename := finalBase + ext
 
 	// 5. Copy File to Library
-	libraryPath := filepath.Join(m.LibraryPath, finalFilename)
+	libraryPath := filepath.Join(targetDir, finalFilename)
 	if err := copyFile(sourcePath, libraryPath); err != nil {
 		return nil, fmt.Errorf("failed to copy file: %w", err)
 	}
@@ -68,7 +78,7 @@ func (m *Manager) ImportPhoto(sourcePath string) (*models.Photo, error) {
 	photo := &models.Photo{
 		OriginalPath: sourcePath,
 		LibraryPath:  libraryPath,
-		Filename:     finalFilename,
+		Filename:     filepath.Join(subDir, finalFilename),
 		Hash:         hash,
 		DateTaken:    metadata.DateTaken,
 		CameraModel:  metadata.CameraModel,
@@ -126,18 +136,18 @@ func (m *Manager) UpdateMetadata(photoID int64, field string, newValue interface
 	return nil
 }
 
-func (m *Manager) findUniqueFilename(base, ext string) (string, error) {
+func (m *Manager) findUniqueFilename(dir, base, ext string) (string, error) {
 	filename := base + ext
 	counter := 1
 	for {
-		path := filepath.Join(m.LibraryPath, filename)
+		path := filepath.Join(dir, filename)
 		if _, err := os.Stat(path); os.IsNotExist(err) {
-			return filename, nil
+			return filepath.Base(strings.TrimSuffix(filename, ext)), nil
 		}
 		filename = fmt.Sprintf("%s_%d%s", base, counter, ext)
 		counter++
 		if counter > 1000 {
-			return "", fmt.Errorf("too many filename collisions for %s", base)
+			return "", fmt.Errorf("too many filename collisions for %s in %s", base, dir)
 		}
 	}
 }

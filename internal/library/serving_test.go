@@ -46,18 +46,22 @@ func TestThumbnailHTTPHandler(t *testing.T) {
 	handler := NewThumbnailHandler(libPath)
 
 	// 4. Test various path formats
-	paths := []string{
-		"/thumbnail/" + photo.Filename,
-		"/thumbnail//" + photo.Filename,
+	paths := []struct {
+		path           string
+		expectedStatus int
+	}{
+		{"/thumbnail/" + photo.Filename, http.StatusOK},
+		{"/thumbnail//" + photo.Filename, http.StatusOK}, // Double slash
+		{"/thumbnail/missing.jpg", http.StatusNotFound},
 	}
 
-	for _, p := range paths {
-		req := httptest.NewRequest("GET", p, nil)
+	for _, tc := range paths {
+		req := httptest.NewRequest("GET", tc.path, nil)
 		rr := httptest.NewRecorder()
 		handler.ServeHTTP(rr, req)
 
-		if rr.Code != http.StatusOK {
-			t.Errorf("Path %s failed: got status %v", p, rr.Code)
+		if rr.Code != tc.expectedStatus {
+			t.Errorf("Path %s failed: expected status %v, got %v", tc.path, tc.expectedStatus, rr.Code)
 		}
 	}
 }

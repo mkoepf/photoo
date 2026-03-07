@@ -1,0 +1,5 @@
+FROM docker/sandbox-templates:gemini
+
+ENV GOOGLE_CLOUD_PROJECT_ID="clean-orb-274815"
+
+CMD ["env"]

@@ -1,3 +1,20 @@
+export namespace library {
+	
+	export class ThumbnailHandler {
+	    History: string[];
+	
+	    static createFrom(source: any = {}) {
+	        return new ThumbnailHandler(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.History = source["History"];
+	    }
+	}
+
+}
+
 export namespace models {
 	
 	export class Photo {
