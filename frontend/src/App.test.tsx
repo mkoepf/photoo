@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import App from './App';
-import { GetPhotos } from '../wailsjs/go/main/App';
+import { GetPhotosPaged } from '../wailsjs/go/main/App';
 
 // Mock Wails runtime calls
 vi.mock('../wailsjs/go/main/App', () => ({
-  GetPhotos: vi.fn(),
+  GetPhotosPaged: vi.fn(),
   SelectFolder: vi.fn(),
   ImportFromFolder: vi.fn(),
   UpdatePhotoDate: vi.fn(),
@@ -15,13 +15,13 @@ vi.mock('../wailsjs/go/main/App', () => ({
 
 describe('App Component', () => {
   it('renders without crashing', async () => {
-    vi.mocked(GetPhotos).mockResolvedValue([]);
+    vi.mocked(GetPhotosPaged).mockResolvedValue([]);
     render(<App />);
     expect(screen.getByText('Photoo')).toBeDefined();
   });
 
   it('displays empty state when no photos are returned', async () => {
-    vi.mocked(GetPhotos).mockResolvedValue([]);
+    vi.mocked(GetPhotosPaged).mockResolvedValue([]);
     render(<App />);
     const emptyState = await screen.findByText('No photos imported yet.');
     expect(emptyState).toBeDefined();
@@ -36,7 +36,7 @@ describe('App Component', () => {
         original_path: '/path/to/test.jpg'
       }
     ];
-    vi.mocked(GetPhotos).mockResolvedValue(mockPhotos as any);
+    vi.mocked(GetPhotosPaged).mockResolvedValue(mockPhotos as any);
     
     render(<App />);
     

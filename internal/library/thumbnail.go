@@ -17,6 +17,7 @@ type ThumbnailHandler struct {
 	libraryPath string
 	cachePath   string
 	History     []string
+	mu          sync.Mutex
 	semaphore   chan struct{}
 	locks       sync.Map // Map of filename -> *sync.Mutex
 }
@@ -34,10 +35,13 @@ func NewThumbnailHandler(libraryPath string) *ThumbnailHandler {
 
 func (h *ThumbnailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
+
+	h.mu.Lock()
 	h.History = append(h.History, fmt.Sprintf("[%s] %s %s", time.Now().Format("15:04:05"), r.Method, path))
 	if len(h.History) > 100 {
 		h.History = h.History[1:]
 	}
+	h.mu.Unlock()
 
 	// Support both /thumbnail/ and thumbnail/
 	if !strings.HasPrefix(path, "/thumbnail/") && !strings.HasPrefix(path, "thumbnail/") {
