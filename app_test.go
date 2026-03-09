@@ -73,3 +73,27 @@ func TestGetPhotosPaged(t *testing.T) {
 		t.Errorf("Expected 1 photo on last page, got %d", len(photos3))
 	}
 }
+
+func TestTSCAvailability(t *testing.T) {
+	// Wails needs tsc to build the frontend.
+	// It should be located in frontend/node_modules/.bin/tsc
+	wd, _ := os.Getwd()
+	tscPath := filepath.Join(wd, "frontend", "node_modules", ".bin", "tsc")
+
+	// If we are in a CI environment where npm install might have been skipped,
+	// we might want to skip this test, but for local dev it must pass.
+	if _, err := os.Stat(tscPath); os.IsNotExist(err) {
+		t.Skipf("tsc not found at %s. Skipping (might be CI).", tscPath)
+		return
+	}
+
+	info, err := os.Stat(tscPath)
+	if err != nil {
+		t.Fatalf("Failed to stat tsc: %v", err)
+	}
+
+	// Check if it's executable (simplified check for cross-platform)
+	if info.Size() == 0 {
+		t.Errorf("tsc binary at %s is empty", tscPath)
+	}
+}

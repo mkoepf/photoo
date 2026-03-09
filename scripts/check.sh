@@ -45,6 +45,15 @@ if [ -d "frontend" ] && [ "$SKIP_FRONTEND" != "true" ]; then
     fi
     
     if [ "$SKIP_FRONTEND" != "true" ]; then
+        echo -n "   - Verifying tsc (TypeScript compiler) availability... "
+        if [ -x "./node_modules/.bin/tsc" ]; then
+            echo -e "${GREEN}EXISTS${NC}"
+        else
+            echo -e "${RED}NOT FOUND${NC}"
+            echo "Expected tsc at frontend/node_modules/.bin/tsc"
+            exit 1
+        fi
+
         echo -n "   - Building frontend... "
         npm run build --silent
         echo -e "${GREEN}DONE${NC}"

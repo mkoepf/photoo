@@ -15,6 +15,8 @@ import (
 	"photoo/internal/models"
 )
 
+// Manager handles the photo library operations
+// Testing hook systemMessage visibility again
 type Manager struct {
 	LibraryPath string
 	DB          *sql.DB
