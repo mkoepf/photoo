@@ -17,6 +17,7 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
+// Testing hook output visibility
 func main() {
 	// Create an instance of the app structure
 	app := NewApp()

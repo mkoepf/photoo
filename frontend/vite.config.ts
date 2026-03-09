@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/thumbnail': {
-        target: 'http://localhost:34115',
+        target: 'http://127.0.0.1:34115',
         changeOrigin: true,
       }
     }

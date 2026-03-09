@@ -29,7 +29,7 @@ func NewThumbnailHandler(libraryPath string) *ThumbnailHandler {
 		libraryPath: libraryPath,
 		cachePath:   cachePath,
 		History:     make([]string, 0),
-		semaphore:   make(chan struct{}, 4), // Limit to 4 concurrent decodes
+		semaphore:   make(chan struct{}, 8), // Limit to 8 concurrent decodes
 	}
 }
 
@@ -43,21 +43,27 @@ func (h *ThumbnailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	h.mu.Unlock()
 
+	// Internal health check
+	if path == "/thumbnail/health" {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+		return
+	}
+
 	// Support both /thumbnail/ and thumbnail/
 	if !strings.HasPrefix(path, "/thumbnail/") && !strings.HasPrefix(path, "thumbnail/") {
 		return
 	}
 
+	fmt.Printf("[BACKEND] Serving thumbnail for path: %s\n", path)
+
 	// Path parsing: /thumbnail/filename.ext or thumbnail/filename.ext -> filename.ext
 	trimmed := strings.TrimLeft(path, "/")
-	if !strings.HasPrefix(trimmed, "thumbnail/") {
-		return
-	}
-
 	filename := strings.TrimPrefix(trimmed, "thumbnail/")
 	filename = strings.TrimLeft(filename, "/")
 
 	if filename == "" {
+		fmt.Printf("[BACKEND] Error: Empty filename in path %s\n", path)
 		http.Error(w, "invalid path", http.StatusBadRequest)
 		return
 	}
@@ -70,9 +76,13 @@ func (h *ThumbnailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// 1. Check Cache First
 	if _, err := os.Stat(cacheFullPath); err == nil {
-		w.Header().Set("Content-Type", "image/jpeg")
-		http.ServeFile(w, r, cacheFullPath)
-		return
+		data, err := os.ReadFile(cacheFullPath)
+		if err == nil {
+			w.Header().Set("Content-Type", "image/jpeg")
+			w.Header().Set("X-Thumbnail-Cache", "HIT")
+			w.Write(data)
+			return
+		}
 	}
 
 	// 2. Lock for this specific filename to avoid redundant generation
@@ -81,19 +91,25 @@ func (h *ThumbnailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	lock.Lock()
 	defer lock.Unlock()
 
-	// Re-check cache after acquiring lock (another goroutine might have finished it)
+	// Re-check cache after acquiring lock
 	if _, err := os.Stat(cacheFullPath); err == nil {
-		w.Header().Set("Content-Type", "image/jpeg")
-		http.ServeFile(w, r, cacheFullPath)
-		return
+		data, err := os.ReadFile(cacheFullPath)
+		if err == nil {
+			w.Header().Set("Content-Type", "image/jpeg")
+			w.Header().Set("X-Thumbnail-Cache", "HIT-LOCKED")
+			w.Write(data)
+			return
+		}
 	}
 
 	// 3. Wait for semaphore to limit total concurrent decodes
+	fmt.Printf("[BACKEND] Entering decode pool for: %s\n", filename)
 	h.semaphore <- struct{}{}
 	defer func() { <-h.semaphore }()
 
 	fullPath := filepath.Join(h.libraryPath, filename)
 	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
+		fmt.Printf("[BACKEND] Error: Original file not found at %s\n", fullPath)
 		http.Error(w, "file not found", http.StatusNotFound)
 		return
 	}
@@ -102,28 +118,13 @@ func (h *ThumbnailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var src image.Image
 	var err error
 
-	/* HEIC support disabled on ARM64 if it fails to build
-	if ext == ".heic" {
-		file, err := os.Open(fullPath)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("failed to open file: %v", err), http.StatusInternalServerError)
-			return
-		}
-		defer file.Close()
-
-		src, err = goheif.Decode(file)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("failed to decode HEIC: %v", err), http.StatusInternalServerError)
-			return
-		}
-	} else {
-	*/
+	/* HEIC support disabled on ARM64 if it fails to build */
 	src, err = imaging.Open(fullPath)
 	if err != nil {
+		fmt.Printf("[BACKEND] Error: Imaging open failed for %s: %v\n", fullPath, err)
 		http.Error(w, fmt.Sprintf("failed to open image: %v", err), http.StatusInternalServerError)
 		return
 	}
-	// }
 
 	// Create a 300x300 thumbnail
 	thumbnail := imaging.Fill(src, 300, 300, imaging.Center, imaging.Lanczos)
@@ -136,8 +137,10 @@ func (h *ThumbnailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "image/jpeg")
+	w.Header().Set("X-Thumbnail-Cache", "MISS")
 	err = imaging.Encode(w, thumbnail, imaging.JPEG)
 	if err != nil {
+		fmt.Printf("[BACKEND] Error: Encode failed: %v\n", err)
 		http.Error(w, fmt.Sprintf("failed to encode thumbnail: %v", err), http.StatusInternalServerError)
 	}
 }
