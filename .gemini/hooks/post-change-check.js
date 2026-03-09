@@ -27,11 +27,10 @@ try {
     encoding: 'utf-8' 
   });
   
-  // Print concise verdict to stderr so the user sees it in the CLI
-  console.error('\n✅ [Hook]: Quality checks PASSED');
-
   // Provide success feedback
   console.log(JSON.stringify({
+    decision: "allow",
+    systemMessage: "✅ [Hook]: Quality checks PASSED",
     hookSpecificOutput: {
       additionalContext: `
 
@@ -40,16 +39,13 @@ ${output}`
     }
   }));
 } catch (err) {
-  // Print concise verdict to stderr
-  console.error('\n❌ [Hook]: Quality checks FAILED');
-
   // If check.sh fails (exit code != 0), replace the tool's success with the error message
   // This forces the agent to fix the issues immediately.
   console.log(JSON.stringify({
     decision: "deny",
+    systemMessage: "❌ [Hook]: Quality checks FAILED",
     reason: `❌ [Hook]: Code quality checks FAILED after modification. Please fix the following issues:
 
-${err.stdout || err.message}`,
-    systemMessage: "Quality check failed"
+${err.stdout || err.message}`
   }));
 }
