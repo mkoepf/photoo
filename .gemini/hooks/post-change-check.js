@@ -27,6 +27,9 @@ try {
     encoding: 'utf-8' 
   });
   
+  // Print concise verdict to stderr so the user sees it in the CLI
+  process.stderr.write('✅ [Hook]: Quality checks PASSED\n');
+
   // Provide success feedback
   console.log(JSON.stringify({
     hookSpecificOutput: {
@@ -37,6 +40,9 @@ ${output}`
     }
   }));
 } catch (err) {
+  // Print concise verdict to stderr
+  process.stderr.write('❌ [Hook]: Quality checks FAILED\n');
+
   // If check.sh fails (exit code != 0), replace the tool's success with the error message
   // This forces the agent to fix the issues immediately.
   console.log(JSON.stringify({
