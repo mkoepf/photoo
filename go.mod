@@ -4,7 +4,6 @@ go 1.26.0
 
 require (
 	github.com/disintegration/imaging v1.6.2
-	github.com/jdeng/goheif v0.0.0-20251001174315-babb64285736
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	github.com/wailsapp/wails/v2 v2.11.0
 	modernc.org/sqlite v1.46.1
