@@ -13,6 +13,10 @@ Photoo is a high-performance, native desktop photo management application design
     - Preserves metadata history in a local SQLite database.
 - **HEIC Support:** Handles modern Apple photo formats and extracts their metadata.
 - **Timeline View:** A clean, responsive grid view of your entire library sorted by date.
+- **High Performance:** 
+    - **Thumbnail Pooling:** Backend worker pool limits concurrent image decodes to prevent memory exhaustion.
+    - **Frontend Pagination:** Loads photos in pages to handle libraries with thousands of items smoothly.
+    - **Browser Caching:** Leverages native browser caching for thumbnails via HTTP URLs.
 
 ## Tech Stack
 

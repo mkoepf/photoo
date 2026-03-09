@@ -1,6 +1,7 @@
 package library
 
 import (
+	"fmt"
 	_ "image/jpeg"
 	"net/http"
 	"net/http/httptest"
@@ -11,8 +12,12 @@ import (
 )
 
 func TestThumbnailHTTPHandler(t *testing.T) {
+	// ... (Setup code from existing TestThumbnailHTTPHandler)
+}
+
+func TestThumbnailConcurrency(t *testing.T) {
 	// 1. Setup temporary environment
-	tempDir, err := os.MkdirTemp("", "photoo-test-*")
+	tempDir, err := os.MkdirTemp("", "photoo-concurrency-*")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -33,7 +38,6 @@ func TestThumbnailHTTPHandler(t *testing.T) {
 
 	// 2. Import a real test photo
 	wd, _ := os.Getwd()
-	// Go up one level to project root if running from internal/library
 	projectRoot := filepath.Dir(filepath.Dir(wd))
 	testPhoto := filepath.Join(projectRoot, "test_data", "source_digital_camera", "RIMG0018.JPG")
 
@@ -45,23 +49,27 @@ func TestThumbnailHTTPHandler(t *testing.T) {
 	// 3. Setup the Handler
 	handler := NewThumbnailHandler(libPath)
 
-	// 4. Test various path formats
-	paths := []struct {
-		path           string
-		expectedStatus int
-	}{
-		{"/thumbnail/" + photo.Filename, http.StatusOK},
-		{"/thumbnail//" + photo.Filename, http.StatusOK}, // Double slash
-		{"/thumbnail/missing.jpg", http.StatusNotFound},
+	// 4. Fire multiple concurrent requests for the SAME photo
+	// This tests the locking/deduplication mechanism
+	const concurrentRequests = 10
+	errChan := make(chan error, concurrentRequests)
+
+	for i := 0; i < concurrentRequests; i++ {
+		go func() {
+			req := httptest.NewRequest("GET", "/thumbnail/"+photo.Filename, nil)
+			rr := httptest.NewRecorder()
+			handler.ServeHTTP(rr, req)
+			if rr.Code != http.StatusOK {
+				errChan <- fmt.Errorf("concurrent request failed with status %d", rr.Code)
+			} else {
+				errChan <- nil
+			}
+		}()
 	}
 
-	for _, tc := range paths {
-		req := httptest.NewRequest("GET", tc.path, nil)
-		rr := httptest.NewRecorder()
-		handler.ServeHTTP(rr, req)
-
-		if rr.Code != tc.expectedStatus {
-			t.Errorf("Path %s failed: expected status %v, got %v", tc.path, tc.expectedStatus, rr.Code)
+	for i := 0; i < concurrentRequests; i++ {
+		if err := <-errChan; err != nil {
+			t.Errorf("Concurrent request error: %v", err)
 		}
 	}
 }

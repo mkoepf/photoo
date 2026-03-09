@@ -46,3 +46,8 @@ This document tracks the prioritized roadmap for the Photoo project.
 ## Technical Debt / Completed
 - [x] **Fix Thumbnail Visibility (Asset Routing):** Resolved the `431` error by switching to Base64 serving and removing the Vite proxy.
 - [x] **Autonomous Testing Mandate:** Updated `GEMINI.md` to ensure all future UI features include automation hooks.
+- [x] **Large Library Optimization (Memory/Performance):**
+    - Implemented backend worker pool (semaphore) for thumbnail generation to prevent memory spikes.
+    - Switched from base64 to HTTP URLs for thumbnails to leverage browser caching.
+    - Added frontend pagination (Load More) and backend paged queries to handle 7000+ photos.
+    - Improved `check.sh` robustness for ARM64 environments.

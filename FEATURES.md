@@ -77,16 +77,14 @@ Generates small versions of photos dynamically for the user interface.
 - Inspect the network traffic in the Wails developer tools (F12) and look for requests to `/thumbnail/...`.
 - *Note: On-the-fly thumbnail generation for HEIC files is currently not supported; these will display a placeholder or error.*
 
-## 7. Command-Line Import Tool
-A dedicated CLI utility for testing the import logic without launching the full UI.
+## 8. Performance & Scaling
+Optimized to handle libraries with thousands of photos (e.g., 7000+ images) without crashing or freezing.
 
 ### How to try it out
-1. Run the test-import tool:
-   ```bash
-   go run cmd/test-import/main.go
-   ```
+1. Import a very large folder of photos.
+2. Scroll through the grid and observe memory usage.
 
 ### How to confirm it works
-- The console output shows each file being scanned and imported.
-- Success messages display the new library filename and extracted date.
-- The `photoo.db` and `library/` directory are updated accordingly.
+- The backend uses a worker pool (semaphore) to limit concurrent image decodes (default: 4), preventing 60GB+ memory spikes.
+- The UI uses pagination (100 items per page) and a "Load More" button to keep the DOM lean.
+- Thumbnails are served via standard HTTP URLs, allowing the browser to cache them efficiently.
