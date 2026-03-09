@@ -54,7 +54,7 @@ if [ -d "frontend" ] && [ "$SKIP_FRONTEND" != "true" ]; then
         echo -e "${GREEN}PASSED${NC}"
 
         echo -n "   - Running frontend tests (vitest)... "
-        npm test -- --silent
+        npm test -- --run --silent
         echo -e "${GREEN}PASSED${NC}"
 
         # If a lint script exists in package.json
