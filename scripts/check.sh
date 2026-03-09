@@ -17,6 +17,34 @@ BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+# --- Logging Setup ---
+LOG_FILE="scripts/logs_check.txt"
+START_TIME=$(date +%s)
+HUMAN_START=$(date "+%Y-%m-%d %H:%M:%S")
+
+# Capture all output for logging on failure
+LOG_TEMP=$(mktemp)
+exec > >(tee -a "$LOG_TEMP") 2> >(tee -a "$LOG_TEMP" >&2)
+
+cleanup() {
+    EXIT_CODE=$?
+    END_TIME=$(date +%s)
+    DURATION=$((END_TIME - START_TIME))
+    
+    if [ $EXIT_CODE -eq 0 ]; then
+        STATUS="SUCCESS"
+        echo "[$HUMAN_START] Duration: ${DURATION}s | Status: $STATUS" >> "$LOG_FILE"
+    else
+        STATUS="FAILED"
+        echo "[$HUMAN_START] Duration: ${DURATION}s | Status: $STATUS" >> "$LOG_FILE"
+        echo "--- Detailed Failure Output ---" >> "$LOG_FILE"
+        cat "$LOG_TEMP" >> "$LOG_FILE"
+        echo -e "\n--------------------------------\n" >> "$LOG_FILE"
+    fi
+    rm -f "$LOG_TEMP"
+}
+trap cleanup EXIT
+
 echo -e "${BLUE}--- Starting Photoo Code Quality Checks ---${NC}"
 
 # --- 1. Frontend Build, Type-check, Test, Lint ---
