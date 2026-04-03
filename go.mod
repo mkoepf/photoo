@@ -6,7 +6,7 @@ require (
 	github.com/disintegration/imaging v1.6.2
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	github.com/wailsapp/wails/v2 v2.11.0
-	modernc.org/sqlite v1.46.1
+	modernc.org/sqlite v1.48.0
 )
 
 require (
@@ -37,12 +37,11 @@ require (
 	github.com/wailsapp/go-webview2 v1.0.22 // indirect
 	github.com/wailsapp/mimetype v1.4.1 // indirect
 	golang.org/x/crypto v0.33.0 // indirect
-	golang.org/x/exp v0.0.0-20251023183803-a4bb9ffd2546 // indirect
 	golang.org/x/image v0.18.0 // indirect
 	golang.org/x/net v0.35.0 // indirect
-	golang.org/x/sys v0.37.0 // indirect
+	golang.org/x/sys v0.42.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
-	modernc.org/libc v1.67.6 // indirect
+	modernc.org/libc v1.70.0 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 )
